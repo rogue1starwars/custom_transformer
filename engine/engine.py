@@ -1,3 +1,4 @@
+import os
 import time
 import torch
 from torch import nn
@@ -138,6 +139,10 @@ def train_worker(
     )
     train_state = TrainState()
 
+    directory = os.path.dirname(config["file_prefix"])
+    if directory and not os.path.exists(directory):
+        os.makedirs(directory)
+
     for epoch in range(config["num_epochs"]):
         model.train()
 
@@ -154,6 +159,7 @@ def train_worker(
             mode="train+log",
             accum_iter=config["accum_iter"],
             train_state=train_state,
+            device=device,
         )
 
         file_path = "%s%.2d.pt" % (config["file_prefix"], epoch)
