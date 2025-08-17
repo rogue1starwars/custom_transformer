@@ -178,6 +178,7 @@ def train_worker(
             engine_utils.DummyOptimizer(),
             engine_utils.DummyScheduler(),
             mode="eval",
+            device=device,
         )
         print(sloss)
         torch.cuda.empty_cache()
