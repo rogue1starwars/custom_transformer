@@ -97,7 +97,7 @@ def create_dataloaders(
 
     def tokenize(text, tokenizer):
         """Tokenize a single text using the provided tokenizer."""
-        return [tok.text for tok in tokenizer(text)]
+        return [tok.text for tok in tokenizer.tokenizer(text)]
 
     def tokenize_ja(text):
         """Tokenize Japanese text using the provided tokenizer."""

@@ -15,7 +15,7 @@ import utils.helper_functions as helper_functions
 
 def tokenize(text, spacy_tokenizer):
     """Tokenize a single text using the provided tokenizer."""
-    return [tok.text for tok in spacy_tokenizer(text)]
+    return [tok.text for tok in spacy_tokenizer.tokenizer(text)]
 
 
 def translate(
