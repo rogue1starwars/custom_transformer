@@ -1,6 +1,6 @@
-"batch_size": 64
+"batch_size": 32
 "distributed": False
-"num_epochs": 10
+"num_epochs": 3
 "accum_iter": 10
 "base_lr": 1.0
 "max_padding": 72
@@ -9,3 +9,5 @@
 "root_path": ./data
 "vocab_path": ./vocabs
 "train_test_split": 0.1
+"train_data_limit": 3000
+"test_data_limit": 300

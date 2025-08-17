@@ -1,11 +1,11 @@
 import yaml
 import torch
 import sklearn
-import engine.engine as engine
-import model.model_builder as model_builder
-import data_setup.data_setup as data_setup
-import data_setup.load_vocab as load_vocab
-import data_setup.load_tokenizers as load_tokenizers
+from engine import engine
+from model import model_builder
+from data_setup import data_setup
+from data_setup import load_vocab
+from data_setup import load_tokenizers
 
 
 def main():
@@ -33,6 +33,14 @@ def main():
     train_df, test_df = sklearn.model_selection.train_test_split(
         raw_df, test_size=config["train_test_split"]
     )
+
+    if not config["train_data_limit"] == -1:
+        num = config["train_data_limit"]
+        train_df = train_df[:num]
+
+    if not config["test_data_limit"] == -1:
+        num = config["test_data_limit"]
+        test_df = test_df[:num]
 
     print("Creating vocabulary...")
     vocab_src, vocab_tgt = load_vocab.load_vocab(
