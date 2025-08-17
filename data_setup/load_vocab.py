@@ -39,6 +39,8 @@ def build_manual_vocab(
     if chunk:  # Process any remaining tokens
         counter.update(chunk)
 
+    print("Finished counting. Filtering tokens...")
+
     # Filter tokens below min_freq
     tokens_and_counts = [(tok, cnt) for tok, cnt in counter.items() if cnt >= min_freq]
     # Sort by frequency (desc), then alphabetically
@@ -132,11 +134,10 @@ def load_vocab(spacy_ja, spacy_en, raw_df, root_path="./vocabs"):
 
 def tokenize(text, tokenizer):
     """Tokenize a single text using the provided tokenizer."""
-    return [tok.text for tok in tokenizer(text)]
+    return [tok.text for tok in tokenizer.tokenizer(text)]
 
 
 def yield_tokens(data_iter, tokenizer):
     """Yield tokens from the data iterator using the specified tokenizer."""
-
-    for from_to_tuple in data_iter:
-        yield from tokenize(from_to_tuple, tokenizer)
+    for sentence in data_iter:
+        yield from tokenize(sentence, tokenizer)
