@@ -1,3 +1,4 @@
+import argparse
 import os
 import yaml
 
@@ -81,7 +82,6 @@ def translate(
     output = [vocab_tgt.itos[idx] for idx in output_tensors.squeeze(0).tolist()]
 
     # Remove start, end, and padding tokens from the output
-    print(output_tensors)
     output_sentence = []
     for token in output:
         if token == "<s>":
@@ -97,12 +97,17 @@ def translate(
 
 def main():
     """Main function to run the translation."""
+
     sentence = "こんにちは。今日は良い天気ですね。"
     max_padding = 72  # Use the same max_padding as in your training config
 
     print("Extracting config file...")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--config", default="config.yaml")
+    args = parser.parse_args()
+    config_file_name = args.config
     try:
-        with open("config.yaml", "r", encoding="utf-8") as f:
+        with open(config_file_name, "r", encoding="utf-8") as f:
             config = yaml.safe_load(f)
     except FileNotFoundError:
         print("Config file not found. Exiting.")
@@ -131,6 +136,7 @@ def main():
     if not os.path.exists(model_path):
         print(f"Model file {model_path} does not exist. Exiting.")
         return
+    print(len(vocab_tgt))
     model = model_builder.build_model(
         src_vocab=len(vocab_src),
         tgt_vocab=len(vocab_tgt),
@@ -139,18 +145,25 @@ def main():
     )
     model.load_state_dict(torch.load(model_path, map_location=device))
 
-    translated_sentence = translate(
-        model=model,
-        sentence=sentence,
-        spacy_ja=spacy_ja,
-        vocab_src=vocab_src,
-        vocab_tgt=vocab_tgt,
-        max_len=max_padding,
-        device=device,
-        pad_id=pad_id,
-    )
-    print(f"Japanese: {sentence}")
-    print(f"English: {translated_sentence}")
+    print("Starting translation, input 'exit' when exiting.")
+    while True:
+        sentence = input("Input Japanese Sentence:")
+        if sentence == "exit":
+            print("Ending translation...")
+            break
+
+        translated_sentence = translate(
+            model=model,
+            sentence=sentence,
+            spacy_ja=spacy_ja,
+            vocab_src=vocab_src,
+            vocab_tgt=vocab_tgt,
+            max_len=max_padding,
+            device=device,
+            pad_id=pad_id,
+        )
+        print(f"Japanese: {sentence}")
+        print(f"English: {translated_sentence}")
 
 
 if __name__ == "__main__":
