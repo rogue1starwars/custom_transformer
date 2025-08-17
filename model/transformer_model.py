@@ -526,7 +526,7 @@ class MultiHeadAttention(nn.Module):
     Attributes:
         head_num (int): The number of attention heads.
         head_dimension (int): The dimension of each attention head.
-        qvk_nets (nn.ModuleList): A list of linear layers for query, key, and value projections.
+        linears (nn.ModuleList): A list of linear layers for query, key, and value projections.
         out_projection_net (nn.Linear): A linear layer to project the concatenated outputs
             of the attention heads back to the model dimension.
         attn (Tensor, optional): The attention weights computed during the forward pass.
@@ -550,7 +550,7 @@ class MultiHeadAttention(nn.Module):
             d_model / head_num
         )  # The dimension of each attention head.
         self.head_num = head_num
-        self.qvk_nets = clones(
+        self.linears = clones(
             nn.Linear(d_model, d_model), 3
         )  # Create 3 identical linear layers for query, key, and value projections
         self.out_projection_net = nn.Linear(d_model, d_model)
@@ -590,7 +590,6 @@ class MultiHeadAttention(nn.Module):
             mask = mask.unsqueeze(1)
 
         batch_size = input_query.size(0)
-        seq_len = input_query.size(1)
 
         # Linearly project the query, key, and value tensors.
         # First, the linear layers will project each tensors into shape (batch_size, seq_len, d_model).
@@ -599,10 +598,10 @@ class MultiHeadAttention(nn.Module):
         query, key, value = [
             net(x)  # (batch_size, seq_len, d_model)
             .view(
-                batch_size, seq_len, self.head_num, self.head_dimension
+                batch_size, -1, self.head_num, self.head_dimension
             )  # (batch_size, seq_len, head_num, head_dimension)
             .transpose(1, 2)  # (batch_size, head_num, seq_len, head_dimension)
-            for net, x in zip(self.qvk_nets, (input_query, input_key, input_value))
+            for net, x in zip(self.linears, (input_query, input_key, input_value))
         ]
 
         # The output tensor will be of shape (batch_size, head_num, seq_len, head_dimension)
@@ -618,7 +617,7 @@ class MultiHeadAttention(nn.Module):
         x = (
             x.transpose(1, 2)
             .contiguous()
-            .view(batch_size, seq_len, self.head_num * self.head_dimension)
+            .view(batch_size, -1, self.head_num * self.head_dimension)
         )
 
         del query
