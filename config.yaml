@@ -1,0 +1,11 @@
+"batch_size": 64
+"distributed": False
+"num_epochs": 10
+"accum_iter": 10
+"base_lr": 1.0
+"max_padding": 72
+"warmup": 3000
+"file_prefix": ./pretrained_models/jesec_model_
+"root_path": ./data
+"vocab_path": ./vocabs
+"train_test_split": 0.1
