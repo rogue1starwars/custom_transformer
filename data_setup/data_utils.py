@@ -49,6 +49,10 @@ class Vocab:
         """Save the vocabulary to a CSV file."""
         if not filepath.endswith(".csv"):
             filepath += ".csv"
+
+        directory = os.path.dirname(filepath)
+        if directory and not os.path.exists(directory):
+            os.makedirs(directory)
         if os.path.exists(filepath):
             print("File already exists. Skipping csv creation")
             return

@@ -1,3 +1,4 @@
+import argparse
 import yaml
 import torch
 import sklearn
@@ -15,8 +16,12 @@ def main():
     print(f"Using device: {device}")
 
     print("Extracting config file...")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--config", default="config.yaml")
+    args = parser.parse_args()
+    config_file_name = args.config
     try:
-        with open("config.yaml", "r", encoding="utf-8") as f:
+        with open(config_file_name, "r", encoding="utf-8") as f:
             config = yaml.safe_load(f)
     except FileNotFoundError:
         print("Config file not found. Exiting.")
@@ -50,7 +55,7 @@ def main():
     print("Creating dataloaders...")
     train_dataloader = data_setup.create_dataloaders(
         train_df,
-        device=config["device"],
+        device=device,
         vocab_src=vocab_src,
         vocab_tgt=vocab_tgt,
         spacy_ja=spacy_ja,
@@ -60,7 +65,7 @@ def main():
     )
     test_dataloader = data_setup.create_dataloaders(
         test_df,
-        device=config["device"],
+        device=device,
         vocab_src=vocab_src,
         vocab_tgt=vocab_tgt,
         spacy_ja=spacy_ja,
